@@ -116,6 +116,7 @@ main (int argc, char *argv[])
                         &errorcode,
                         &erroroffset,
                         NULL);
+  free (pattern);
   if (code == NULL)
     exit_with_pcre2_error ("pcre2_compile", errorcode);
 
