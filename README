@@ -8,8 +8,16 @@
 - PCRE 2
 
 * 编译
+
+#+BEGIN_EXAMPLE
+$ make
+#+END_EXAMPLE
+
 * 使用
 
-# 测试
-# 1. 我讲中文
-# 2. 我用拼音输入法
+#+BEGIN_EXAMPLE
+$ pygrep
+usage: pygrep Pinyin... FILE
+$ pygrep pin yin README
+从拼音构建正则表达式搜索中文。
+#+END_EXAMPLE
