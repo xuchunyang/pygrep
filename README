@@ -21,3 +21,9 @@ usage: pygrep Pinyin... FILE
 $ pygrep pin yin README
 从拼音构建正则表达式搜索中文。
 #+END_EXAMPLE
+
+* 主意
+
+- [ ] 高亮匹配
+- [ ] 输出行号
+- [ ] 多个文件
