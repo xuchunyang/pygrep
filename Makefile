@@ -1,6 +1,9 @@
-CFLAGS =-std=c99 -Wall -Wpedantic
-LDFLAGS = -lpcre2-8
+CFLAGS = -std=c99 -Wall -Wpedantic $(shell pkg-config --cflags libpcre2-8)
+LDFLAGS = $(shell pkg-config --libs libpcre2-8)
 
-# XXX How to apply -DDEBUG via Make?
-pygrep: pygrep.c pinyin.map.c
-	$(CC) $(CFLAGS) $(LDFLAGS) pygrep.c pinyin.map.c -o pygrep
+pygrep : pygrep.c pinyin.map.c
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+
+.PHONY : clean
+clean :
+	-rm pygrep
