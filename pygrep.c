@@ -23,6 +23,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef DEBUG
+#undef DEBUG
+#define DEBUG printf
+#else
+#define DEBUG(...)
+#endif
+
 extern char *pinyin[];
 extern char *pinyin_map[];
 
@@ -79,9 +86,7 @@ main (int argc, char *argv[])
         }
       else
         {
-#ifdef DEBUG
-          printf ("%s\n", pinyin_map[j]);
-#endif
+          DEBUG ("[DEBUG] %s\n", pinyin_map[j]);
           size_t len = strlen (pinyin_map[j]);
           if (wp + len > pattern + allocated)
             {
@@ -106,9 +111,7 @@ main (int argc, char *argv[])
   if (newp != NULL)
     pattern = newp;
 
-#ifdef DEBUG
-  printf ("[DEBUG] The regexp is %.*s\n", (int) patternlen, pattern);
-#endif
+  DEBUG ("[DEBUG] The regexp is %.*s\n", (int) patternlen, pattern);
   
   code = pcre2_compile ((PCRE2_SPTR8) pattern,
                         patternlen,

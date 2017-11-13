@@ -1,2 +1,6 @@
+CFLAGS =-std=c99 -Wall -Wpedantic
+LDFLAGS = -lpcre2-8
+
+# XXX How to apply -DDEBUG via Make?
 pygrep: pygrep.c pinyin.map.c
-	$(CC) pygrep.c pinyin.map.c -o pygrep -std=c99 -Wall -lpcre2-8
+	$(CC) $(CFLAGS) $(LDFLAGS) pygrep.c pinyin.map.c -o pygrep
