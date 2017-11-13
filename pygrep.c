@@ -22,10 +22,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 #ifdef DEBUG
 #undef DEBUG
-#define DEBUG printf
+#define DEBUG(...) do {                         \
+    fprintf (stderr, "[DEBUG] ");               \
+    fprintf (stderr, __VA_ARGS__);              \
+    fprintf (stderr, "\n");                     \
+  } while (0)
 #else
 #define DEBUG(...)
 #endif
@@ -86,7 +91,6 @@ main (int argc, char *argv[])
         }
       else
         {
-          DEBUG ("[DEBUG] %s\n", pinyin_map[j]);
           size_t len = strlen (pinyin_map[j]);
           if (wp + len > pattern + allocated)
             {
@@ -111,8 +115,8 @@ main (int argc, char *argv[])
   if (newp != NULL)
     pattern = newp;
 
-  DEBUG ("[DEBUG] The regexp is %.*s\n", (int) patternlen, pattern);
-  
+  DEBUG ("regex: %.*s", (int) patternlen, pattern);
+
   code = pcre2_compile ((PCRE2_SPTR8) pattern,
                         patternlen,
                         PCRE2_UTF,
