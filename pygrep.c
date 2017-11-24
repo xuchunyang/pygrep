@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "sds.h"
 
 #ifdef DEBUG
 #undef DEBUG
@@ -52,17 +53,13 @@ find_pinyin (char *py)
 int
 main (int argc, char *argv[])
 {
-  if (argc < 3)
+ if (argc < 3)
     {
       fprintf (stderr, "usage: %s Pinyin... FILE\n", argv[0]);
       exit (EXIT_FAILURE);
     }
 
-  char *pattern;
-  size_t allocated = 512;
-  size_t patternlen;
-  char *newp;
-  char *wp;
+  sds pattern = sdsempty();
   char *filename = argv[argc - 1];
   pcre2_code *code = NULL;
   int errorcode;
@@ -74,13 +71,6 @@ main (int argc, char *argv[])
   size_t linecap = 512;
   ssize_t linelen;
 
-  pattern = malloc (allocated);
-  if (pattern == NULL)
-    {
-      perror ("malloc");
-      exit (EXIT_FAILURE);
-    }
-  wp = pattern;
   for (int i = 1; i < argc - 1; i++)
     {
       int j = find_pinyin (argv[i]);
@@ -90,40 +80,18 @@ main (int argc, char *argv[])
           exit (EXIT_FAILURE);
         }
       else
-        {
-          size_t len = strlen (pinyin_map[j]);
-          if (wp + len > pattern + allocated)
-            {
-              allocated = (allocated + len) * 2;
-              newp = realloc (pattern, allocated);
-              if (newp == NULL)
-                {
-                  perror ("realloc");
-                  exit (EXIT_FAILURE);
-                }
-              wp = newp + (wp - pattern);
-              pattern = newp;
-            }
-          memcpy (wp, pinyin_map[j], len);
-          wp += len;
-        }
+          pattern = sdscat (pattern, pinyin_map[j]);
     }
 
-  patternlen = wp - pattern;
-  /* Resize memory to the optimal size.  */
-  newp = realloc (pattern, patternlen);
-  if (newp != NULL)
-    pattern = newp;
-
-  DEBUG ("regex: %.*s", (int) patternlen, pattern);
+  DEBUG ("regex: %.*s", (int) sdslen (pattern), pattern);
 
   code = pcre2_compile ((PCRE2_SPTR8) pattern,
-                        patternlen,
+                        (int) sdslen (pattern),
                         PCRE2_UTF,
                         &errorcode,
                         &erroroffset,
                         NULL);
-  free (pattern);
+  sdsfree (pattern);
   if (code == NULL)
     exit_with_pcre2_error ("pcre2_compile", errorcode);
 
